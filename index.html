@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Happy Form</title>
+    <link rel="stylesheet" href="index.css">
+</head>  
+<body>
+    <h1>My Happy Form</h1>
+
+    <form id="myForm">
+        <!-- First Name and Last Name in same row -->
+        <div class="name-row">
+            <div class="name-field">
+                <label for="fname">First Name:</label>
+                <input type="text" id="fname" name="first_name" placeholder="First Name" />
+            </div>
+            
+            <div class="name-field">
+                <label for="lname">Last Name:</label>
+                <input type="text" id="lname" name="last_name" placeholder="Last Name" />
+            </div>
+        </div>
+
+        <!-- Comments box -->
+        <div style="margin-bottom: 20px;">
+            <textarea id="comments" name="comments" rows="4" style="width: 100%; padding: 8px; resize: vertical;"></textarea>
+        </div>
+
+        <!-- Newsletter-->
+        <div>
+            <label for="newsletter">Subscribe to newsletter</label>
+            <input type="checkbox" id="newsletter" name="newsletter" value="yes">
+        </div>
+
+        <!-- Email section (hidden initially) -->
+        <div id="email-section">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" placeholder="Enter your email" />
+        </div>
+        
+        <input type="submit" id="submitBtn" value="Submit" disabled>
+
+        <!-- Success/Error messages -->
+        <div id="message" style="margin-top: 20px; padding: 10px; border-radius: 4px; display: none;"></div>
+    </form>
+
+    <script>
+        const firstNameInput = document.getElementById('fname');
+        const lastNameInput = document.getElementById('lname');
+        const commentsInput = document.getElementById('comments');
+        const newsletterCheckbox = document.getElementById('newsletter');
+        const emailSection = document.getElementById('email-section');
+        const emailInput = document.getElementById('email');
+        const submitBtn = document.getElementById('submitBtn');
+        const messageDiv = document.getElementById('message');
+        const form = document.getElementById('myForm');
+
+        // Function to check if submit button should be enabled
+        function checkSubmitButton() {
+            const isFirstNameFilled = firstNameInput.value.trim() !== '';
+            const isLastNameFilled = lastNameInput.value.trim() !== '';
+
+            if (isFirstNameFilled && isLastNameFilled) {
+                submitBtn.disabled = false;
+            } else {
+                submitBtn.disabled = true;
+            }
+        }
+
+        // Add event listeners to name inputs
+        firstNameInput.addEventListener('input', checkSubmitButton);
+        lastNameInput.addEventListener('input', checkSubmitButton);
+
+        // Show/hide email section based on newsletter checkbox
+        newsletterCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                emailSection.style.display = 'block';
+            } else {
+                emailSection.style.display = 'none';
+            }
+        });
+
+        // Function to show messages
+        function showMessage(text, isSuccess) {
+            messageDiv.textContent = text;
+            messageDiv.style.display = 'block';
+            messageDiv.style.backgroundColor = isSuccess ? '#d4edda' : '#f8d7da';
+            messageDiv.style.color = isSuccess ? '#155724' : '#721c24';
+            messageDiv.style.border = isSuccess ? '1px solid #c3e6cb' : '1px solid #f5c6cb';
+
+            // Hide message after 2 seconds if success
+            if (isSuccess) {
+                setTimeout(() => {
+                    messageDiv.style.display = 'none';
+                }, 2000);
+            }
+        }
+
+        // Function to clear form fields
+        function clearForm() {
+            firstNameInput.value = '';
+            lastNameInput.value = '';
+            commentsInput.value = '';
+            newsletterCheckbox.checked = false;
+            emailInput.value = '';
+            emailSection.style.display = 'none';
+            checkSubmitButton(); // Re-disable submit button
+        }
+
+        // Form submission handler
+        form.addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            // Prepare request data
+            const requestData = {
+                firstName: firstNameInput.value.trim(),
+                lastName: lastNameInput.value.trim(),
+                isSubscribed: newsletterCheckbox.checked,
+                comment: commentsInput.value.trim(),
+            };
+
+            // Only include email if subscribed
+            if (newsletterCheckbox.checked) {
+                requestData.email = emailInput.value.trim();
+            }
+
+            // Disable submit button during request
+            submitBtn.disabled = true;
+            submitBtn.value = 'Submitting...';
+
+            // Send POST request
+            fetch('https://jsonplaceholder.typicode.com/users', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestData),
+            })
+            .then(response => {
+                if (response.ok) {
+                    showMessage(`Thanks for your submission ${requestData.firstName}!`, true);
+                    clearForm();
+                } else {
+                    throw new Error('Oops something went wrong');
+                }
+            })
+            .catch(error => {
+                showMessage('Oops something went wrong', false);
+                console.error('There was a problem with the fetch operation:', error);
+            })
+            .finally(() => {
+                // Re-enable submit button
+                submitBtn.value = 'Submit';
+                checkSubmitButton();
+            });
+        });
+
+        // Initial check
+        checkSubmitButton();
+    </script>
+</body>
+</html>
