@@ -1,0 +1,59 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.name-row {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.name-field {
+    display: flex;
+    flex-direction: column;
+}
+
+input[type="text"], input[type="email"] {
+    margin-top: 5px;
+    padding: 8px;
+}
+
+input::placeholder {
+    color: #999;
+}
+
+#email-section {
+    display: none;
+    margin-top: 20px;
+}
+
+#submitBtn {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #ccc;
+    color: #666;
+    border: 1px solid #999;
+    cursor: not-allowed;
+}
+
+#submitBtn:enabled {
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    border: 1px solid #007bff;
+}
+
+#submitBtn:enabled:hover {
+    background-color: #0056b3;
+}
